@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
- 
- 
- 
- 
 #先引入后面可能用到的包（package）
 import pandas as pd  
 import numpy as np
