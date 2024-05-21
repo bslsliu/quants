@@ -24,27 +24,22 @@ class SmaCross(bt.Strategy):
         self.crossover = bt.ind.CrossOver(sma1, sma2)  # crossover signal
  
     def next(self):
- 
-        if self.crossover > 0:  # if fast crosses slow to the upside
- 
-            self.close()
-  
-            self.buy() # enter long
- 
-            print("Buy {} shares".format( self.data.close[0]))
- 
-            print(self.position)
- 
-        elif self.crossover < 0:  # in the market & cross to the downside
- 
-            self.close()# close long position
-  
-            # self.sell()
- 
-            # print("Sale {} shares".format(self.data.close[0]))
- 
-            print(self.position)
-            
+        # 检查是否持仓   
+        if not self.position: # 没有持仓
+            #执行买入条件判断：收盘价格上涨突破20日均线
+            if self.crossover > 0:
+                #执行买入
+                print("Buy {} shares".format( self.data.close[0]))
+                self.buy(size=1)    
+                print(self.position)     
+        else:
+            #执行卖出条件判断：收盘价格跌破20日均线
+            if self.crossover < 0:
+                #执行卖出
+                self.close()
+                print("Sale at {} shares".format(self.data.close[0]))
+                print(self.position)
+             
 class MySignal(bt.Indicator):
     lines = ('signal',) # 声明 signal 线，交易信号放在 signal line 上
     params = (('pfast', 5), ('pslow', 20),)
@@ -68,8 +63,8 @@ def bt1():
     ]
     # 把 date 作为日期索引，以符合 Backtrader 的要求
     stock_hfq_df.index = pd.to_datetime(stock_hfq_df['date'])
-    start_date = datetime(2020, 1, 1)  # 回测开始时间
-    end_date = datetime(2024, 5, 20)  # 回测结束时间
+    start_date = datetime(2024, 1, 1)  # 回测开始时间
+    end_date = datetime(2024, 4, 15)  # 回测结束时间
     data = bt.feeds.PandasData(dataname=stock_hfq_df, 
                            fromdate=start_date, 
                            todate=end_date)  # 加载数据
@@ -84,20 +79,20 @@ def bt1():
  
     # 将交易策略加载到回测系统中
  
-    # cerebro.addstrategy(SmaCross)
+    cerebro.addstrategy(SmaCross)
  
     # 设置初始资本为10,000
  
     startcash = 100000
 
-    cerebro.add_signal(bt.SIGNAL_LONG, MySignal)
+    # cerebro.add_signal(bt.SIGNAL_LONG, MySignal)
  
 
     cerebro.broker.setcash(startcash)
  
     # 设置交易手续费为 0.1%
  
-    cerebro.broker.setcommission(commission=0.001)
+    # cerebro.broker.setcommission(commission=0.001)
  
     # 运行回测系统
  
