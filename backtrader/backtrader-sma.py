@@ -28,17 +28,22 @@ class SmaCross(bt.Strategy):
         if not self.position: # 没有持仓
             #执行买入条件判断：收盘价格上涨突破20日均线
             if self.crossover > 0:
-                #执行买入
-                print("Buy {} shares".format( self.data.close[0]))
+                # 获取当前日期
+                current_date = self.datas[0].datetime.date(0)
+                print('Buy Signal At Current Date: {}'.format(current_date))
+
                 self.buy(size=1)    
-                print(self.position)     
+                print(self.data)     
         else:
             #执行卖出条件判断：收盘价格跌破20日均线
             if self.crossover < 0:
+                # 获取当前日期
+                current_date = self.datas[0].datetime.date(0)
+                print('Sale Signal at Current Date: {}'.format(current_date))
                 #执行卖出
                 self.close()
                 print("Sale at {} shares".format(self.data.close[0]))
-                print(self.position)
+                print(self.data)
              
 class MySignal(bt.Indicator):
     lines = ('signal',) # 声明 signal 线，交易信号放在 signal line 上
