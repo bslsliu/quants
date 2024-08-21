@@ -1,6 +1,3 @@
-import datetime # 
-import os.path # 路径管理  
-import sys # 获取当前运行脚本的路径 (in argv[0]) 
 #导入backtrader框架  
 import backtrader as bt 
 from feedstock import get_stock_history
