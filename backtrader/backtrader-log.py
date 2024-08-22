@@ -1,6 +1,6 @@
 #导入backtrader框架  
 import backtrader as bt 
-from feedstock import get_stock_history
+from feed.feedstock import get_stock_history
 
 # 创建策略继承bt.Strategy 
 class TestStrategy(bt.Strategy): 
