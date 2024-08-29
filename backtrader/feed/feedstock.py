@@ -3,7 +3,6 @@ import pandas as pd
 import backtrader as bt
 from datetime import datetime
 import akshare as ak
-
 def get_stock_history ():
     stock_hfq_df = ak.stock_zh_a_hist(symbol="000001", adjust="hfq").iloc[:, :6]
         # 处理字段命名，以符合 Backtrader 的要求
