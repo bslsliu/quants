@@ -20,7 +20,7 @@ class SmaStrategy(bt.Strategy):
             if self.crossover < 0:
                 # 获取当前日期
                 current_date = self.datas[0].datetime.date(0)
-                #执行卖出
+                # 执行卖出
                 self.close()
                 print(f'Sale Signal at Current Date: {current_date}, sale at {self.datas[0].open[1]}')
                 # print(self.data)
