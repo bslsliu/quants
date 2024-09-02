@@ -31,26 +31,7 @@ class TestStrategy(bt.Strategy):
         # 如果有订单正在挂起，不操作
         if self.order:
             return
-        # if not self.position:
-        #     self.buy_at_3_bar_fail()
-        # else:
-        #     # 如果有持仓且符合条件则卖出
-        #     self.sale_at_target_bar_after_buy(self)
-        # 如果没有持仓则买入
-        if not self.position:
-            # 今天的收盘价在均线价格之上
-            if self.dataclose[0] > self.sma[0]:
-                # 买入
-                self.log("买入单, %.2f" % self.dataclose[0])
-                # 跟踪订单避免重复
-                self.order = self.buy()
-        else:
-            # 如果已经持仓，收盘价在均线价格之下
-            if self.dataclose[0] < self.sma[0]:
-                # 全部卖出
-                self.log("卖出单, %.2f" % self.dataclose[0])
-                # 跟踪订单避免重复
-                self.order = self.sell()
+        self.trade_by_sma()
 
     def notify_order(self, order):
         self.log(f"order change {order.status}")
@@ -89,16 +70,33 @@ class TestStrategy(bt.Strategy):
             doprint=True,
         )
 
-    # 卖出逻辑也很简单： 5个K线柱后（第6个K线柱）不管涨跌都卖。
-    def sale_at_target_bar_after_buy(self):
-        if len(self) >= (self.bar_executed + self.params.exitbars):
-            # 全部卖出
-            self.log(f"order sale")
-            # 跟踪订单避免重复
-            self.order = self.sell()
+    def trade_simple(self):
+        if not self.position:
+            # 今天的收盘价在均线价格之上
+            if len(self) >= (self.bar_executed + self.params.exitbars):
+                # 全部卖出
+                self.log(f"order sale")
+                # 跟踪订单避免重复
+                self.order = self.sell()
+        else:
+            # 卖出逻辑也很简单： 5个K线柱后（第6个K线柱）不管涨跌都卖。
+            if self.dataclose[0] < self.dataclose[-1]:
+                if self.dataclose[-1] < self.dataclose[-2]:
+                    self.log(f"order buy")
+                    self.buy()
 
-    def buy_at_3_bar_fail(self):
-        if self.dataclose[0] < self.dataclose[-1]:
-            if self.dataclose[-1] < self.dataclose[-2]:
-                self.log(f"order buy")
-                self.buy()
+    def trade_by_sma(self):
+        if not self.position:
+            # 今天的收盘价在均线价格之上
+            if self.dataclose[0] > self.sma[0]:
+                # 买入
+                self.log("买入单, %.2f" % self.dataclose[0])
+                # 跟踪订单避免重复
+                self.order = self.buy()
+        else:
+            # 如果已经持仓，收盘价在均线价格之下
+            if self.dataclose[0] < self.sma[0]:
+                # 全部卖出
+                self.log("卖出单, %.2f" % self.dataclose[0])
+                # 跟踪订单避免重复
+                self.order = self.sell()
