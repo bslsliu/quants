@@ -10,8 +10,12 @@ cerebro.broker.setcash(100000.0)  # 设置投资金额100000.0
 # 每笔交易使用固定交易量
 cerebro.addsizer(bt.sizers.FixedSize, stake=10)
 # 设置佣金为0.0
+
 cerebro.broker.setcommission(commission=0.0)
 # 引擎运行前打印期出资金
 # print("组合期初资金: %.2f" % cerebro.broker.getvalue())
-cerebro.run(maxcpus=1)
+cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name="mysharpe")
+thestrats = cerebro.run(maxcpus=1)
+print("夏普比率:", thestrats[0].analyzers.mysharpe.get_analysis())
+
 # cerebro.plot(style="candlestick")

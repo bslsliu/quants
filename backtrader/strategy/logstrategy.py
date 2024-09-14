@@ -1,7 +1,6 @@
 import backtrader as bt
 
 
-# 创建策略继承bt.Strategy
 class TestStrategy(bt.Strategy):
     params = (
         ("maperiod", 15),
@@ -23,6 +22,7 @@ class TestStrategy(bt.Strategy):
         self.sma = bt.indicators.MovingAverageSimple(
             self.datas[0], period=self.params.maperiod
         )
+        self.trade_result = []
 
     def next(self):
         # 记录收盘价
@@ -61,12 +61,24 @@ class TestStrategy(bt.Strategy):
         if not trade.isclosed:
             return
         self.log("交易利润, 毛利润 %.2f, 净利润 %.2f" % (trade.pnl, trade.pnlcomm))
+        self.trade_result.append(
+            [
+                self.datas[0].datetime.date(-1 * trade.barlen).isoformat(),
+                trade.data.open[-1 * trade.barlen],
+                self.datas[0].datetime.date(0).isoformat(),
+                trade.data.open[0],
+                trade.size,
+                trade.pnl,
+                trade.pnlcomm,
+            ]
+        )
 
     def stop(self):
         self.log(
             "(均线周期 %2d)期末资金 %.2f"
             % (self.params.maperiod, self.broker.getvalue()),
         )
+        print(self.trade_result)
 
     # 如果K线收盘价出现三连跌，则买入。
     def trade_simple(self):
